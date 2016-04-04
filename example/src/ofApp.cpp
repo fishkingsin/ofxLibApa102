@@ -3,14 +3,15 @@ extern "C"{
 //--------------------------------------------------------------
 	void ofApp::setup(){
 		ofSetFrameRate(60);
-		struct APA102* strip = APA102_Init(60);
-		struct APA102_Animation* anim = APA102_StripesAnimation(strip, APA102_CreateFrame(31, 0xFF, 0xFF, 0xFF), 50, 4, 2, -1);
-		APA102_KillAnimation(anim);
-		anim = APA102_StripesAnimation(strip, APA102_CreateFrame(31, 0x00, 0x00, 0x00), 50, 4, 2, -1);
-		APA102_KillAnimation(anim);
+		strip = APA102_Init(288);
+		anim = APA102_StripesAnimation(strip, APA102_CreateFrame(31, 1, 1, 1), 50, 4, 2, -1);
+
+
 
 	}
-
+	void ofApp::exit(){
+		APA102_KillAnimation(anim);	
+	}
 //--------------------------------------------------------------
 	void ofApp::update(){
 
