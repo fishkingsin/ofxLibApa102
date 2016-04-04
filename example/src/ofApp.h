@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxLibApa102.h"
 
 class ofApp : public ofBaseApp{
 	public:
