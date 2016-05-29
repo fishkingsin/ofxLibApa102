@@ -3,8 +3,9 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
-
+#if TARGET_LINUX_ARM
 #include <wiringPi.h>
+#endif
 #include <pthread.h>
 
 int sgn(int a) {

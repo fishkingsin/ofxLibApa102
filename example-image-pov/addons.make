@@ -1,2 +1,1 @@
-ofxWiringPi
 ofxLibApa102

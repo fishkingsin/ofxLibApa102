@@ -13,7 +13,9 @@ void ofApp::setup(){
 			frames[x][y].set(color.r, color.g, color.b, brightness);
 		}
 	}
+#if TARGET_LINUX_ARM
 	apa102.setup(image.getHeight());
+#endif
 	
 	
 	length = 4+(image.getHeight()*4)+4;
@@ -40,8 +42,9 @@ void ofApp::exit(){
 		buf[index+2] = 0;
 		buf[index+3] = 0;
 	}
-
+#if TARGET_LINUX_ARM
 	wiringPiSPIDataRW(0, buf, length);
+#endif
 }
 void ofApp::threadedFunction(){
 	while(isThreadRunning())
@@ -67,8 +70,9 @@ void ofApp::threadedFunction(){
 					buf[index+2] = frames[x][y].g;
 					buf[index+3] = frames[x][y].r;
 				}
-				
+#if TARGET_LINUX_ARM
 				wiringPiSPIDataRW(0, buf, length);
+#endif
 				
 			}
 

@@ -1,7 +1,9 @@
 #pragma once
 
 #include "ofMain.h"
+#if TARGET_LINUX_ARM
 #include "ofxLibApa102.h"
+#endif
 class ofApp : public ofBaseApp, ofThread{
 	public:
 		void setup();
@@ -20,8 +22,9 @@ class ofApp : public ofBaseApp, ofThread{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+#if TARGET_LINUX_ARM
 		ofxAPA102 apa102;
-
+#endif
 		void threadedFunction();
 		ofImage image;
 		vector<vector<ofColor>>frames;

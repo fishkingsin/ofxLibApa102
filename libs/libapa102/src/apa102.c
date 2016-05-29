@@ -2,10 +2,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
+#if TARGET_LINUX_ARM
 #include <wiringPi.h>
-#include <wiringPiSPI.h>
 
+#include <wiringPiSPI.h>
+#endif
 struct APA102 {
   int n_leds;
 };
@@ -27,23 +28,25 @@ struct APA102* APA102_Init(int n_leds) {
 
   strip = (struct APA102*)malloc(sizeof(struct APA102));
   strip->n_leds = n_leds;
-
+#if TARGET_LINUX_ARM
   wiringPiSetup();
   if(wiringPiSPISetup(0, 6000000) < 0) {
     printf("WiringPiSPISetup failed\n");
     return 0;
   }
+#endif
   return strip;
 }
 
 void APA102_Begin() {
   uint8_t buf[1];
   int i;
-
+#if TARGET_LINUX_ARM
   for(i = 0; i < 4; i++) {
     buf[0] = 0x00;
     wiringPiSPIDataRW(0, buf, 1);
   }
+#endif
 }
 
 void APA102_End() {
@@ -67,8 +70,9 @@ void APA102_WriteLED(struct APA102_Frame* led) {
   led_frame[1] = led->b;
   led_frame[2] = led->g;
   led_frame[3] = led->r;
-
+#if TARGET_LINUX_ARM
   wiringPiSPIDataRW(0, led_frame, 4);
+#endif
 }
 
 void APA102_Fill(struct APA102* strip, struct APA102_Frame* led) {
@@ -80,6 +84,7 @@ void APA102_Fill(struct APA102* strip, struct APA102_Frame* led) {
   }
 
   APA102_Begin();
+#if TARGET_LINUX_ARM
   for(i = 0; i < strip->n_leds; i++) {
     led_frame[0] = 0b11100000 | (0b00011111 & led->brightness);
     led_frame[1] = led->b;
@@ -88,6 +93,7 @@ void APA102_Fill(struct APA102* strip, struct APA102_Frame* led) {
 
     wiringPiSPIDataRW(0, led_frame, 4);
   }
+#endif
   APA102_End();
 }
 
@@ -124,9 +130,9 @@ void APA102_Stripes(struct APA102* strip, struct APA102_Frame* led, int stripe_s
       led_frame[2] = 0x00;
       led_frame[3] = 0x00;
     }
-
+#if TARGET_LINUX_ARM
     wiringPiSPIDataRW(0, led_frame, 4);
-
+#endif
     ctr++;
     if(ctr >= stripe_size + gap_size) {
       ctr = 0;
@@ -184,9 +190,9 @@ void APA102_MultiStripes(struct APA102* strip, struct APA102_Frame** leds, int s
       led_frame[2] = 0x00;
       led_frame[3] = 0x00;
     }
-
+#if TARGET_LINUX_ARM
     wiringPiSPIDataRW(0, led_frame, 4);
-
+#endif
     ctr++;
     if(ctr >= stripe_size + gap_size) {
       ctr = 0;
