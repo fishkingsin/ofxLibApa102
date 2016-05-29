@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
+#define TARGET_LINUX_ARM
 #ifdef TARGET_LINUX_ARM
 #include "ofxLibApa102.h"
 #endif
