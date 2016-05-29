@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
-#ifdef OF_TARGET_LINUXARMV6L
+#ifdef TARGET_LINUX_ARM
 #include "ofxLibApa102.h"
 #endif
 class ofApp : public ofBaseApp, ofThread{
@@ -22,7 +22,7 @@ class ofApp : public ofBaseApp, ofThread{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
-#ifdef OF_TARGET_LINUXARMV6L
+#ifdef TARGET_LINUX_ARM
 		ofxAPA102 apa102;
 #endif
 		void threadedFunction();

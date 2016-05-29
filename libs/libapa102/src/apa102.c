@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef OF_TARGET_LINUXARMV6L
+#ifdef TARGET_LINUX_ARM
 #include <wiringPi.h>
 
 #include <wiringPiSPI.h>
@@ -28,7 +28,7 @@ struct APA102* APA102_Init(int n_leds) {
 
   strip = (struct APA102*)malloc(sizeof(struct APA102));
   strip->n_leds = n_leds;
-#ifdef OF_TARGET_LINUXARMV6L
+#ifdef TARGET_LINUX_ARM
   wiringPiSetup();
   if(wiringPiSPISetup(0, 6000000) < 0) {
     printf("WiringPiSPISetup failed\n");
@@ -41,7 +41,7 @@ struct APA102* APA102_Init(int n_leds) {
 void APA102_Begin() {
   uint8_t buf[1];
   int i;
-#ifdef OF_TARGET_LINUXARMV6L
+#ifdef TARGET_LINUX_ARM
   for(i = 0; i < 4; i++) {
     buf[0] = 0x00;
     wiringPiSPIDataRW(0, buf, 1);
@@ -70,7 +70,7 @@ void APA102_WriteLED(struct APA102_Frame* led) {
   led_frame[1] = led->b;
   led_frame[2] = led->g;
   led_frame[3] = led->r;
-#ifdef OF_TARGET_LINUXARMV6L
+#ifdef TARGET_LINUX_ARM
   wiringPiSPIDataRW(0, led_frame, 4);
 #endif
 }
@@ -84,7 +84,7 @@ void APA102_Fill(struct APA102* strip, struct APA102_Frame* led) {
   }
 
   APA102_Begin();
-#ifdef OF_TARGET_LINUXARMV6L
+#ifdef TARGET_LINUX_ARM
   for(i = 0; i < strip->n_leds; i++) {
     led_frame[0] = 0b11100000 | (0b00011111 & led->brightness);
     led_frame[1] = led->b;
@@ -130,7 +130,7 @@ void APA102_Stripes(struct APA102* strip, struct APA102_Frame* led, int stripe_s
       led_frame[2] = 0x00;
       led_frame[3] = 0x00;
     }
-#ifdef OF_TARGET_LINUXARMV6L
+#ifdef TARGET_LINUX_ARM
     wiringPiSPIDataRW(0, led_frame, 4);
 #endif
     ctr++;
@@ -190,7 +190,7 @@ void APA102_MultiStripes(struct APA102* strip, struct APA102_Frame** leds, int s
       led_frame[2] = 0x00;
       led_frame[3] = 0x00;
     }
-#ifdef OF_TARGET_LINUXARMV6L
+#ifdef TARGET_LINUX_ARM
     wiringPiSPIDataRW(0, led_frame, 4);
 #endif
     ctr++;
