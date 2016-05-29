@@ -3,6 +3,7 @@ int brightness = 10;
 //--------------------------------------------------------------
 void ofApp::setup(){
 	ofSetFrameRate(60);
+	ofSetLogLevel(OF_LOG_VERBOSE);
 	image.load("earth.png");
 	image.setImageType(OF_IMAGE_COLOR);
 	frames.resize(image.getWidth());
@@ -15,6 +16,7 @@ void ofApp::setup(){
 	}
 #ifdef TARGET_LINUX_ARM
 	apa102.setup(image.getHeight());
+	ofLogVerbose() << "apa102.setup(image.getHeight());";
 #endif
 	
 	
@@ -43,7 +45,9 @@ void ofApp::exit(){
 		buf[index+3] = 0;
 	}
 #ifdef TARGET_LINUX_ARM
+
 	wiringPiSPIDataRW(0, buf, length);
+	ofLogVerbose() << "wiringPiSPIDataRW(0, buf, length);";
 #endif
 }
 void ofApp::threadedFunction(){
