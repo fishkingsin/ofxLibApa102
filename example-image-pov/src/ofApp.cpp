@@ -13,7 +13,7 @@ void ofApp::setup(){
 			frames[x][y].set(color.r, color.g, color.b, brightness);
 		}
 	}
-#if OF_TARGET_LINUXARMV6L
+#ifdef OF_TARGET_LINUXARMV6L
 	apa102.setup(image.getHeight());
 #endif
 	
@@ -42,7 +42,7 @@ void ofApp::exit(){
 		buf[index+2] = 0;
 		buf[index+3] = 0;
 	}
-#if OF_TARGET_LINUXARMV6L
+#ifdef OF_TARGET_LINUXARMV6L
 	wiringPiSPIDataRW(0, buf, length);
 #endif
 }
@@ -70,7 +70,7 @@ void ofApp::threadedFunction(){
 					buf[index+2] = frames[x][y].g;
 					buf[index+3] = frames[x][y].r;
 				}
-#if OF_TARGET_LINUXARMV6L
+#ifdef OF_TARGET_LINUXARMV6L
 				wiringPiSPIDataRW(0, buf, length);
 #endif
 				

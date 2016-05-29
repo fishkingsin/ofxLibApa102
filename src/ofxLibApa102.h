@@ -1,4 +1,4 @@
-#if OF_TARGET_LINUXARMV6L
+#ifdef OF_TARGET_LINUXARMV6L
 #include "ofxWiringPi.h"
 extern "C"{
 	#include "apa102.h"

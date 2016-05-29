@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
-#if OF_TARGET_LINUXARMV6L
+#ifdef OF_TARGET_LINUXARMV6L
 #include <wiringPi.h>
 #endif
 #include <pthread.h>
