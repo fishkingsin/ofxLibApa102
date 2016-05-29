@@ -1,0 +1,3 @@
+ofxWiringPi
+ofxLibApa102
+ofxOMXPlayer
