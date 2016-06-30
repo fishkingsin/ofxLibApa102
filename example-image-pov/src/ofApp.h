@@ -30,6 +30,6 @@ class ofApp : public ofBaseApp, ofThread{
 		ofImage image;
 		vector<vector<ofColor>>frames;
 		int length;
-		u_int8_t* buf;
+		vector<u_int8_t*> bufs;
 		
 };

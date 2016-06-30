@@ -21,32 +21,46 @@ void ofApp::setup(){
 	
 	
 	length = 4+(image.getHeight()*4)+4;
-	buf = (u_int8_t*)malloc(length);
-	buf[0] = 0x00;
-	buf[1] = 0x00;
-	buf[2] = 0x00;
-	buf[3] = 0x00;
+	bufs.resize(image.getWidth());
+	for(int i = 0 ; i < image.getWidth() ; i++){
+		bufs[i] = (u_int8_t*)malloc(length);
+		bufs[i][0] = 0x00;
+		bufs[i][1] = 0x00;
+		bufs[i][2] = 0x00;
+		bufs[i][3] = 0x00;
 
-	buf[length-4] = 0xFF;
-	buf[length-3] = 0xFF;
-	buf[length-2] = 0xFF;
-	buf[length-1] = 0xFF;
+		bufs[i][length-4] = 0xFF;
+		bufs[i][length-3] = 0xFF;
+		bufs[i][length-2] = 0xFF;
+		bufs[i][length-1] = 0xFF;
+	}
+
+	for(int x = 0 ; x < frames.size() ; x++){
+		for(int y = 0 ; y < frames[x].size() ; y++){
+		// apa102.setFrameData(y,frames[x][y]);
+			int index = (y*4)+4;
+			bufs[x][index] = 0b11100000 | (0b00011111 & frames[x][y].a);
+			bufs[x][index+1] = frames[x][y].b;
+			bufs[x][index+2] = frames[x][y].g;
+			bufs[x][index+3] = frames[x][y].r;
+		}
+	}
 	
 	startThread();
 }
 void ofApp::exit(){
 	stopThread();
 	for(int y = 0 ; y < image.getHeight() ; y++){
-	
+
 		int index = (y*4)+4;
-		buf[index] = 0b11100000 | (0b00011111 & 0);
-		buf[index+1] = 0;
-		buf[index+2] = 0;
-		buf[index+3] = 0;
+		bufs[0][index] = 0b11100000 | (0b00011111 & 0);
+		bufs[0][index+1] = 0;
+		bufs[0][index+2] = 0;
+		bufs[0][index+3] = 0;
 	}
 #ifdef TARGET_LINUX_ARM
 
-	wiringPiSPIDataRW(0, buf, length);
+	wiringPiSPIDataRW(0, bufs[0], length);
 	ofLogVerbose() << "wiringPiSPIDataRW(0, buf, length);";
 #endif
 }
@@ -66,16 +80,16 @@ void ofApp::threadedFunction(){
 				
 				//scan each pixels of the line
 				
-				for(int y = 0 ; y < frames[x].size() ; y++){
-					// apa102.setFrameData(y,frames[x][y]);
-					int index = (y*4)+4;
-					buf[index] = 0b11100000 | (0b00011111 & frames[x][y].a);
-					buf[index+1] = frames[x][y].b;
-					buf[index+2] = frames[x][y].g;
-					buf[index+3] = frames[x][y].r;
-				}
+				// for(int y = 0 ; y < frames[x].size() ; y++){
+				// 	// apa102.setFrameData(y,frames[x][y]);
+				// 	int index = (y*4)+4;
+				// 	buf[index] = 0b11100000 | (0b00011111 & frames[x][y].a);
+				// 	buf[index+1] = frames[x][y].b;
+				// 	buf[index+2] = frames[x][y].g;
+				// 	buf[index+3] = frames[x][y].r;
+				// }
 #ifdef TARGET_LINUX_ARM
-				wiringPiSPIDataRW(0, buf, length);
+				wiringPiSPIDataRW(0, bufs[x], length);
 #endif
 				
 			}
@@ -98,7 +112,7 @@ void ofApp::threadedFunction(){
 }
 //--------------------------------------------------------------
 void ofApp::update(){
-
+	
 }
 
 //--------------------------------------------------------------
