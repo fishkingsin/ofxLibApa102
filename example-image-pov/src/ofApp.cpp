@@ -1,8 +1,12 @@
 #include "ofApp.h"
 int brightness = 10;
+int step = 0;
 //--------------------------------------------------------------
 void ofApp::setup(){
+	ofSetLogLevel(OF_LOG_VERBOSE);
 	ofSetFrameRate(60);
+	//spi
+	//spi
 	image.load("earth.png");
 	image.setImageType(OF_IMAGE_COLOR);
 	frames.resize(image.getWidth());
@@ -13,35 +17,55 @@ void ofApp::setup(){
 			frames[x][y].set(color.r, color.g, color.b, brightness);
 		}
 	}
-	apa102.setup(image.getHeight());
 	
+	for ( int i = 0 ; i < 256 ; i++){
+		GAMMA[i] = int(pow(float(i) / 255.0, 2.7) * 255.0  *0.2+ 0.5) ;
+	}
+	apa102.setup(image.getHeight());
+	ofLogVerbose() << "apa102.setup(image.getHeight());";
+	ofLogVerbose() << " image.getHeight() : " << image.getHeight() ;
+	ofLogVerbose() << " image.getWidth() : " << image.getWidth();
 	
 	length = 4+(image.getHeight()*4)+4;
-	buf = (u_int8_t*)malloc(length);
-	buf[0] = 0x00;
-	buf[1] = 0x00;
-	buf[2] = 0x00;
-	buf[3] = 0x00;
+	buf.resize(image.getWidth());
+	toBuf = ( unsigned char*)malloc(length);
+	for(int i = 0 ; i < image.getWidth() ; i++){
+		buf[i] = ( unsigned char*)malloc(length);
+		buf[i][0] = 0x00;
+		buf[i][1] = 0x00;
+		buf[i][2] = 0x00;
+		buf[i][3] = 0x00;
 
-	buf[length-4] = 0xFF;
-	buf[length-3] = 0xFF;
-	buf[length-2] = 0xFF;
-	buf[length-1] = 0xFF;
+		for(int y = 0 ; y < image.getHeight() ; y++){
+			int index = (y*4)+4;
+			buf[i][index] = 0b11100000 | (0b00011111 & frames[i][y].a);
+			buf[i][index+1] = GAMMA[frames[i][y].b];
+			buf[i][index+2] = GAMMA[frames[i][y].g];
+			buf[i][index+3] = GAMMA[frames[i][y].r];
+		}
+		buf[i][length-4] = 0xFF;
+		buf[i][length-3] = 0xFF;
+		buf[i][length-2] = 0xFF;
+		buf[i][length-1] = 0xFF;
+	}
 	
 	startThread();
 }
 void ofApp::exit(){
+	ofLogVerbose() << "exit";
 	stopThread();
 	for(int y = 0 ; y < image.getHeight() ; y++){
-	
+
 		int index = (y*4)+4;
-		buf[index] = 0b11100000 | (0b00011111 & 0);
-		buf[index+1] = 0;
-		buf[index+2] = 0;
-		buf[index+3] = 0;
+		buf[0][index] = 0b11100000 | (0b00011111 & 0);
+		buf[0][index+1] = 0;
+		buf[0][index+2] = 0;
+		buf[0][index+3] = 0;
 	}
 
-	wiringPiSPIDataRW(0, buf, length);
+	wiringPiSPIDataRW(0, buf[0], length);
+	int spi_device = wiringPiSPIGetFd(0);
+	close(spi_device);
 }
 void ofApp::threadedFunction(){
 	while(isThreadRunning())
@@ -50,28 +74,9 @@ void ofApp::threadedFunction(){
 		if(lock())
 		{
 
-                // Unlock the mutex.  This is only
-                // called if lock() returned true above.
-			//scan each line x
-			
-
-			for(int x = 0 ; x < frames.size() ; x++){
-				
-				//scan each pixels of the line
-				
-				for(int y = 0 ; y < frames[x].size() ; y++){
-					// apa102.setFrameData(y,frames[x][y]);
-					int index = (y*4)+4;
-					buf[index] = 0b11100000 | (0b00011111 & frames[x][y].a);
-					buf[index+1] = frames[x][y].b;
-					buf[index+2] = frames[x][y].g;
-					buf[index+3] = frames[x][y].r;
-				}
-				
-				wiringPiSPIDataRW(0, buf, length);
-				
-			}
-
+			memcpy ( toBuf, buf[step%frames.size()], length );
+			wiringPiSPIDataRW(0, toBuf, length);
+			step++;			
 			unlock();
 
                 // Sleep for 1 second.

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
+
 #include "ofxLibApa102.h"
 class ofApp : public ofBaseApp, ofThread{
 	public:
@@ -20,12 +21,13 @@ class ofApp : public ofBaseApp, ofThread{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+		u_int8_t GAMMA[256];
 		ofxAPA102 apa102;
-
 		void threadedFunction();
 		ofImage image;
 		vector<vector<ofColor>>frames;
 		int length;
-		u_int8_t* buf;
+		vector<unsigned char *> buf;
+		unsigned char * toBuf;
 		
 };
