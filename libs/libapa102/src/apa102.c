@@ -29,7 +29,7 @@ struct APA102* APA102_Init(int n_leds) {
   strip->n_leds = n_leds;
 
   wiringPiSetup();
-  if(wiringPiSPISetup(0, 6000000) < 0) {
+  if(wiringPiSPISetup(0, 8000000) < 0) {
     printf("WiringPiSPISetup failed\n");
     return 0;
   }
