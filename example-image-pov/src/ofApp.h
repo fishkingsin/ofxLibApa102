@@ -3,7 +3,8 @@
 #include "ofMain.h"
 
 #include "ofxLibApa102.h"
-class ofApp : public ofBaseApp, ofThread{
+
+class ofApp : public ofBaseApp{
 	public:
 		void setup();
 		void exit();
@@ -21,17 +22,10 @@ class ofApp : public ofBaseApp, ofThread{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
-		u_int8_t GAMMA[256];
-		ofxAPA102 apa102;
-		void threadedFunction();
+		
+		
+		
 		ofImage image;
-		vector<vector<ofColor>>frames;
-		int length;
-		vector<unsigned char *> buf;
-		unsigned char * toBuf;
-		unsigned char * clockStartFrame;
-		unsigned char * clockEndFrame;
-		int endFrameLen;
-		unsigned char* blackFrame;
+		ImagePOV pov;
 		
 };
