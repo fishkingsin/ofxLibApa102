@@ -29,5 +29,9 @@ class ofApp : public ofBaseApp, ofThread{
 		int length;
 		vector<unsigned char *> buf;
 		unsigned char * toBuf;
+		unsigned char * clockStartFrame;
+		unsigned char * clockEndFrame;
+		int endFrameLen;
+		unsigned char* blackFrame;
 		
 };
