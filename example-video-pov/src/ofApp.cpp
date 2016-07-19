@@ -5,11 +5,13 @@ int brightness = 10;
 void ofApp::setup(){
 	ofSetFrameRate(60);
 	
-
+	for ( int i = 0 ; i < 256 ; i++){
+		GAMMA[i] = int(pow(float(i) / 255.0, 2.7) * 255.0  * 0.1 + 0.5) ;
+	}
 	
 	//Somewhat like ofFboSettings we may have a lot of options so this is the current model
 	ofxOMXPlayerSettings settings;
-	settings.videoPath = ofToDataPath("Timecoded_Big_bunny.mov", true);
+	settings.videoPath = ofToDataPath("video.mp4", true);
 	settings.useHDMIForAudio = true;	//default true
 	settings.enableTexture = true;		//default true
 	settings.enableLooping = true;		//default true
@@ -22,11 +24,12 @@ void ofApp::setup(){
 		std::exit(0);
 	}
 	ofLogVerbose() << "omxPlayer.getWidth() " << omxPlayer.getWidth() << "omxPlayer.getHeight() " << omxPlayer.getHeight();
-	apa102.setup(omxPlayer.getHeight());
+	fbo.allocate(256,144,GL_RGB);
+	apa102.setup(fbo.getHeight());
 	
-    fbo.allocate(omxPlayer.getWidth(),omxPlayer.getHeight(),GL_RGB);
-    pixels.allocate(omxPlayer.getWidth(),omxPlayer.getHeight(),OF_IMAGE_COLOR);
-	length = 4+(omxPlayer.getHeight()*4)+4;
+
+	pixels.allocate(fbo.getWidth(),fbo.getHeight(),OF_IMAGE_COLOR);
+	length = 4+(fbo.getHeight()*4)+4;
 	buf = (u_int8_t*)malloc(length);
 	buf[0] = 0x00;
 	buf[1] = 0x00;
@@ -41,10 +44,10 @@ void ofApp::setup(){
 	startThread();
 }
 void ofApp::exit(){
-    omxPlayer.close();
+	omxPlayer.close();
 	stopThread();
-	for(int y = 0 ; y < omxPlayer.getHeight() ; y++){
-	
+	for(int y = 0 ; y < fbo.getHeight() ; y++){
+
 		int index = (y*4)+4;
 		buf[index] = 0b11100000 | (0b00011111 & 0);
 		buf[index+1] = 0;
@@ -72,12 +75,12 @@ void ofApp::threadedFunction(){
 				
 				for(int y = 0 ; y <fbo.getHeight() ; y++){
 					// apa102.setFrameData(y,frames[x][y]);
-                    ofColor c = pixels.getColor(x,y);
+					ofColor c = pixels.getColor(x,y);
 					int index = (y*4)+4;
 					buf[index] = 0b11100000 | (0b00011111 & c.a);
-					buf[index+1] = c.b;
-					buf[index+2] = c.g;
-					buf[index+3] = c.r;
+					buf[index+1] = GAMMA[c.b];
+					buf[index+2] = GAMMA[c.g];
+					buf[index+3] = GAMMA[c.r];
 				}
 				
 				wiringPiSPIDataRW(0, buf, length);
@@ -102,16 +105,16 @@ void ofApp::threadedFunction(){
 }
 //--------------------------------------------------------------
 void ofApp::update(){
-    lock();
+	lock();
 	if(!omxPlayer.isTextureEnabled())
 	{
 		return;
 	}
 	fbo.begin();
-	omxPlayer.draw(0, 0, ofGetWidth(), ofGetHeight());
+	omxPlayer.draw(0, 0, fbo.getWidth(), fbo.getHeight());
 	fbo.end();
-    fbo.readToPixels(pixels);
-    unlock();
+	fbo.readToPixels(pixels);
+	unlock();
 }
 
 //--------------------------------------------------------------
