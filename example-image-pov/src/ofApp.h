@@ -2,7 +2,8 @@
 
 #include "ofMain.h"
 
-#include "ofxLibApa102.h"
+#include "ImagePOV.h"
+
 
 class ofApp : public ofBaseApp{
 	public:

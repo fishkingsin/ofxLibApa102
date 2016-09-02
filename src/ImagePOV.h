@@ -1,7 +1,7 @@
 #include "ofMain.h"
 
-#include "ofxWiringPi.h"
-// #include "ofxAPA102.h"
+// #include "ofxWiringPi.h"
+#include "ofxAPA102.h"
 extern "C"{
 	
 	class ImagePOV : public ofThread{
@@ -13,7 +13,7 @@ extern "C"{
 		void start();
 		void stop();
 	private:
-		
+		ofxAPA102 apa102;
 		u_int8_t GAMMA[256];
 		vector<vector<ofColor>>frames;
 		int length;

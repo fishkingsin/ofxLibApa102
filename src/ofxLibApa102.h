@@ -4,4 +4,3 @@ extern "C"{
 	
 }
 #include "ofxAPA102.h"
-#include "ImagePOV.h"

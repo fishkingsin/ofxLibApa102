@@ -46,16 +46,8 @@ void ofApp::setup(){
 void ofApp::exit(){
 	omxPlayer.close();
 	stopThread();
-	for(int y = 0 ; y < fbo.getHeight() ; y++){
-
-		int index = (y*4)+4;
-		buf[index] = 0b11100000 | (0b00011111 & 0);
-		buf[index+1] = 0;
-		buf[index+2] = 0;
-		buf[index+3] = 0;
-	}
-
-	wiringPiSPIDataRW(0, buf, length);
+	
+	apa102.off();
 }
 void ofApp::threadedFunction(){
 	while(isThreadRunning())
@@ -83,7 +75,7 @@ void ofApp::threadedFunction(){
 					buf[index+3] = GAMMA[c.r];
 				}
 				
-				wiringPiSPIDataRW(0, buf, length);
+				apa102.send(buf, length);
 				
 			}
 

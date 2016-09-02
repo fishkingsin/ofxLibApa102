@@ -19,7 +19,7 @@ extern "C"{
 		for ( int i = 0 ; i < 256 ; i++){
 			GAMMA[i] = int(pow(float(i) / 255.0, 2.7) * 255.0  *0.2+ 0.5) ;
 		}
-		wiringPiSPISetup(0,15000000);
+		apa102.setup(image.getHeight());
 		ofLogVerbose() << "apa102.setup(image.getHeight());";
 		ofLogVerbose() << " image.getHeight() : " << image.getHeight() ;
 		ofLogVerbose() << " image.getWidth() : " << image.getWidth();
@@ -61,12 +61,16 @@ extern "C"{
 	}
 
 	void ImagePOV::update(){
+		
+		
+		
 		for(int x = 0 ; x < frames.size() ; x++){
 			memcpy ( toBuf, buf[x], length );
-			wiringPiSPIDataRW(0, clockStartFrame, 4);
-			wiringPiSPIDataRW(0, toBuf, length);
-			wiringPiSPIDataRW(0, clockEndFrame, endFrameLen);
+			apa102.send(clockStartFrame, 4);
+			apa102.send(toBuf,length);
+			apa102.send(clockEndFrame, endFrameLen);
 		}
+
 	}
 	void ImagePOV::threadedFunction(){
 		while(isThreadRunning())
@@ -99,10 +103,10 @@ extern "C"{
 		}
 
 
-		wiringPiSPIDataRW(0, clockStartFrame, 4);
-		wiringPiSPIDataRW(0, blackFrame, blackFrameLen);
-		wiringPiSPIDataRW(0, clockEndFrame, endFrameLen);
-
+		apa102.send(clockStartFrame, 4);
+		apa102.send(blackFrame, blackFrameLen);
+		apa102.send(clockEndFrame, endFrameLen);
+		apa102.closeSPI();
 		// int spi_device = wiringPiSPIGetFd(0);
 		// std::close(spi_device);
 	}
@@ -115,8 +119,8 @@ extern "C"{
 		while(!lock()){
 			sleep(1000);
 		}
-		wiringPiSPIDataRW(0, clockStartFrame, 4);
-		wiringPiSPIDataRW(0, blackFrame,  blackFrameLen);
-		wiringPiSPIDataRW(0, clockEndFrame, endFrameLen);
+		apa102.send(clockStartFrame, 4);
+		apa102.send(blackFrame,  blackFrameLen);
+		apa102.send(clockEndFrame, endFrameLen);
 	}
 }

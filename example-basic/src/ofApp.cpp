@@ -3,7 +3,7 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 	ofSetFrameRate(60);
-	apa102.setup(288);
+	apa102.setup(144);
 }
 void ofApp::exit(){
 	apa102.off();
@@ -11,7 +11,7 @@ void ofApp::exit(){
 //--------------------------------------------------------------
 void ofApp::update(){
 
-	for(int i = 0 ; i < 288 ; i++){
+	for(int i = 0 ; i < 144 ; i++){
 		int hue = (ofGetFrameNum()+i)%255;
 		apa102.setFrameData(i,ofColor::fromHsb(hue,255,10,10));
 	}
